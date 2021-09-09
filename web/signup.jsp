@@ -18,7 +18,7 @@ and open the template in the editor.
 
     </head>
     <body>
-       <c:set var="page" value="login" scope="request"/>
+       <c:set var="page" value="signup" scope="request"/>
         <jsp:include page="header.jsp"/>
         <main id="login">
             <a href="index.jsp">

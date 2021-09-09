@@ -18,7 +18,11 @@ and open the template in the editor.
 
     </head>
     <body>
-       <c:set var="page" value="login" scope="request"/>
+        <c:if test="${not empty user}">
+            <c:redirect url="personalArea.jsp"/>
+        </c:if>
+        <c:if test="${empty user}">
+        <c:set var="page" value="login" scope="request"/>
         <jsp:include page="header.jsp"/>
         <main id="login">
             <a href="index.jsp">
@@ -28,16 +32,17 @@ and open the template in the editor.
             <fieldset>
                 <legend> insert data: </legend>
                 <form action="LoginServlet" method="post">
-                    <label for="user"> Username</label>
-                    <input type="text" id="user" name="user" />
-                    <label for="pass"> Password</label>
-                    <input type="password" id="pass" name="pass" />
+                    <label for="username"> Username</label>
+                    <input type="text" id="username" name="username" />
+                    <label for="password"> Password</label>
+                    <input type="password" id="password" name="password" />
                     <input type="hidden" id="origine" name="origine" value="login.jsp"/> 
 
-                    <input type="submit" value="accedi" />                
+                    <input type="submit" value="login" />                
                 </form>
             </fieldset>
             <a href="signup.jsp"> <b>signup</b> </a>
         </main>
+        </c:if>
     </body>
 </html>
