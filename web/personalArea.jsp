@@ -19,14 +19,14 @@
     </head>
     <body>
         
-        <c:if test="${empty user}">
+        <c:if test="${empty username}">
             <c:redirect url="login.jsp"/>
         </c:if>
-        <c:if test="${not empty user}">
+        <c:if test="${not empty username}">
         <c:set var="page" value="login" scope="request"/>
         <jsp:include page="header.jsp"/>
         <main>
-            <h1>ciao ${user}!</h1>
+            <h1>ciao ${username}!</h1>
             
         </main>        
         </c:if>

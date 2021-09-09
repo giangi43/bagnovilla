@@ -43,7 +43,7 @@ public class UserFactory {
         
         try{
             conn = DatabaseManager.getInstance().getDbConnection();
-            String query = "SELECT * FROM User WHERE username = ? AND password = ?";
+            String query = "SELECT * FROM user_ WHERE username = ? AND password = ?";
             stmt = conn.prepareStatement(query);
             stmt.setString(1, username);
             stmt.setString(2, password);
@@ -72,7 +72,7 @@ public class UserFactory {
                 user.setFiscal_code(set.getString("fiscal_code"));
                 user.setSex(set.getString("sex"));
                 user.setEmail(set.getString("email"));
-                user.setTelephone(set.getInt("telephone"));
+                user.setTelephone(set.getString("telephone"));
                 user.setPassword(set.getString("password"));
                 
                 return user;
@@ -125,7 +125,7 @@ public class UserFactory {
                 user.setFiscal_code(set.getString("fiscal_code"));
                 user.setSex(set.getString("sex"));
                 user.setEmail(set.getString("email"));
-                user.setTelephone(set.getInt("telephone"));
+                user.setTelephone(set.getString("telephone"));
                              
                 users.add(user);
             }

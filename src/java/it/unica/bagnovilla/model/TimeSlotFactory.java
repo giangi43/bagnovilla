@@ -35,7 +35,56 @@ public class TimeSlotFactory {
         return instance;
     }
     
-    public List<TimeSlot> getAllUsers(){
+    public TimeSlot getTimeSlotByDatePeriod(LocalDateTime date, Boolean period){
+        Connection conn= null;
+        PreparedStatement stmt = null;
+        ResultSet set = null;
+        
+        
+        try{
+            Timestamp timestamp = Timestamp.valueOf(date);
+            conn = DatabaseManager.getInstance().getDbConnection();
+            String query = "SELECT * FROM Time_slot WHERE Booking_date = ? AND Is_morning = ?";
+            stmt = conn.prepareStatement(query);
+            stmt.setTimestamp(1, timestamp);
+            stmt.setBoolean(2, period);
+            
+            set = stmt.executeQuery();
+            
+            if(set.next()){
+                TimeSlot slot = new TimeSlot();
+                
+                slot.setId(set.getLong("id"));
+                
+                slot.setIs_morning(set.getBoolean("is_morning"));
+                
+                Timestamp ts = set.getTimestamp("booking_date");                
+                LocalDateTime localDt = null;
+                if(ts != null){
+                    localDt = LocalDateTime.ofInstant(
+                            Instant.ofEpochMilli(ts.getTime()),
+                            ZoneOffset.UTC);
+                }
+                slot.setBooking_date(localDt);                
+               
+                slot.setAviable_spots(set.getInt("aviable_spots"));
+                
+                return slot;
+            }else{
+                return null;
+            }
+        }catch(SQLException e){
+            Logger.getLogger(UserFactory.class.getName()).log(Level.SEVERE, null, e);
+        } finally {
+            try{ set.close();} catch(Exception e){}
+            try{ stmt.close();} catch(Exception e){}
+            try{ conn.close();} catch(Exception e){}
+        }
+        
+        return null;
+    }
+    
+    public List<TimeSlot> getAllTimeSlots(){
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet set = null;

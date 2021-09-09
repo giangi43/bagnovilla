@@ -22,7 +22,7 @@ public class User {
     private String fiscal_code;
     private String sex;
     private String email;
-    private int telephone;
+    private String telephone;
     private String password;
 
     public String getPassword() {
@@ -113,11 +113,11 @@ public class User {
         this.email = email;
     }
 
-    public int getTelephone() {
+    public String getTelephone() {
         return telephone;
     }
 
-    public void setTelephone(int telephone) {
+    public void setTelephone(String telephone) {
         this.telephone = telephone;
     }
     

@@ -18,7 +18,7 @@ import javax.servlet.http.HttpSession;
  *
  * @author fpw
  */
-@WebServlet(name = "AreaPersonaleServlet", urlPatterns = {"/user"})
+@WebServlet(name = "PersonalAreaServlet", urlPatterns = {"/username"})
 public class PersonalAreaServlet extends HttpServlet {
 
     /**
@@ -35,8 +35,8 @@ public class PersonalAreaServlet extends HttpServlet {
         
         HttpSession session = request.getSession(false);
         
-        if(session != null && session.getAttribute("user") != null){
-            response.sendRedirect("personaArea.jsp");
+        if(session != null && session.getAttribute("username") != null){
+            response.sendRedirect("personalArea.jsp");
         } else {
             response.sendRedirect("login.jsp");
         }
