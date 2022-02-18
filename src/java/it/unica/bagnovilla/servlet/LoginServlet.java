@@ -50,6 +50,7 @@ public class LoginServlet extends HttpServlet {
             //if(login(username, password)){ 
             if(user != null){ // verifica se le credenziali sono corrette
                 session.setAttribute("username", user.getUsername()); //imposta username
+                session.setAttribute("isAdmin", user.isIs_admin());
                 session.setMaxInactiveInterval(300); // tempo massimo di inattività (in secondi) prima che la sessione scada
                 response.sendRedirect("username"); // redirect alla servlet username
             }
