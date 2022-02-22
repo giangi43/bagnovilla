@@ -1,0 +1,68 @@
+CREATE TABLE user_ (
+	is_admin boolean default false,
+	want_invoice boolean not null,
+	username varchar(30) primary key,
+	password VARCHAR(20) not null,
+	name VARCHAR(50) not null,
+	last_name VARCHAR(50) not null,
+	birth_date date not null,
+	sex varchar(1) check (sex in('m','f','o')) not null, 
+	email VARCHAR(50) not null,
+	telephone varchar(20) not null,
+	fiscal_code varchar(16) not null,
+	foto VARCHAR(200)
+);
+
+create table lifeguard(
+	id serial primary key,
+	name VARCHAR(50) not null,
+	last_name VARCHAR(50) not null,
+	email VARCHAR(50) not null,
+	telephone varchar(20) not null,
+	certificates varchar(200)
+);
+
+create table time_slot (
+	booking_date date unique not null,
+	is_morning boolean unique not null,
+	aviable_spots int default 20,
+	id_lifeguard serial references lifeguard (id) not null,
+	primary key (booking_date,is_morning)
+);
+
+create table service_details (
+	id serial primary key,
+	booking_date date references time_slot (booking_date) not null,
+	is_morning boolean references time_slot (is_morning) not null,
+	price float not null,
+	booked_places int not null,
+	service_description text
+);
+
+create table booking (
+	id serial primary key,
+	username varchar(30) references user_ (username) not null,
+	id_service serial references service_details (id) not null
+);
+
+create table invoice (
+	id serial primary key,
+	username varchar(30) references user_ (username) not null,
+	id_service serial references service_details (id) not null
+);
+
+create table coupon(
+	code varchar(20) primary key,
+	username varchar(30) references user_ (username),
+	expiry_date date not null,
+	creation_date date not null
+);
+
+create table message_ (
+	id serial primary key,
+	sender varchar(30) references user_ (username) not null,
+	reciver varchar(30) references user_ (username) not null,
+	time_stamp timestamp,
+	readed boolean default false,
+	payload text
+);
