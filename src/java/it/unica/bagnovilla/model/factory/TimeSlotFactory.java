@@ -7,12 +7,14 @@ package it.unica.bagnovilla.model.factory;
 
 import it.unica.bagnovilla.model.entity.TimeSlot;
 import it.unica.bagnovilla.db.DatabaseManager;
+import it.unica.bagnovilla.utils.FactoryUtil;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -36,14 +38,14 @@ public class TimeSlotFactory {
         return instance;
     }
     
-    public TimeSlot getTimeSlotByDatePeriod(LocalDateTime date, Boolean period){
+    public TimeSlot getTimeSlotByDatePeriod(LocalDate date, Boolean period){
         Connection conn= null;
         PreparedStatement stmt = null;
         ResultSet set = null;
         
         
         try{
-            Timestamp timestamp = Timestamp.valueOf(date);
+            Timestamp timestamp = FactoryUtil.localDateToTimestamp(date);
             conn = DatabaseManager.getInstance().getDbConnection();
             String query = "SELECT * FROM Time_slot WHERE Booking_date = ? AND Is_morning = ?";
             stmt = conn.prepareStatement(query);
@@ -54,21 +56,15 @@ public class TimeSlotFactory {
             
             if(set.next()){
                 TimeSlot slot = new TimeSlot();
-                
-                slot.setId(set.getLong("id"));
+               
                 
                 slot.setIs_morning(set.getBoolean("is_morning"));
-                
-                Timestamp ts = set.getTimestamp("booking_date");                
-                LocalDateTime localDt = null;
-                if(ts != null){
-                    localDt = LocalDateTime.ofInstant(
-                            Instant.ofEpochMilli(ts.getTime()),
-                            ZoneOffset.UTC);
-                }
-                slot.setBooking_date(localDt);                
+   
+                slot.setBooking_date(FactoryUtil.sqlTimestampToLocalDate(set.getTimestamp("booking_date")));                
                
                 slot.setAviable_spots(set.getInt("aviable_spots"));
+                
+                slot.setIdLifeguard(set.getInt("id_lifeguard"));
                 
                 return slot;
             }else{
@@ -100,19 +96,13 @@ public class TimeSlotFactory {
             while(set.next()){
                 TimeSlot slot = new TimeSlot();
                 
-                slot.setId(set.getLong("id"));
-                
-                Timestamp ts = set.getTimestamp("booking_date");                
-                LocalDateTime localDt = null;
-                if(ts != null){
-                    localDt = LocalDateTime.ofInstant(
-                            Instant.ofEpochMilli(ts.getTime()),
-                            ZoneOffset.UTC);
-                }
-                slot.setBooking_date(localDt);
                 slot.setIs_morning(set.getBoolean("is_morning"));
+   
+                slot.setBooking_date(FactoryUtil.sqlTimestampToLocalDate(set.getTimestamp("booking_date")));                
+               
                 slot.setAviable_spots(set.getInt("aviable_spots"));
                 
+                slot.setIdLifeguard(set.getInt("id_lifeguard"));               
                
                 slots.add(slot);
             }

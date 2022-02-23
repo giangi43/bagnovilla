@@ -51,5 +51,11 @@ public class TimeSlot {
         this.idLifeguard = idLifeguard;
     }
     
+    public String getTimeTable(){
+        if(is_morning){
+            return "8:00-14:00";
+        }
+        return "14:00-20:00";        
+    }
 
 }
