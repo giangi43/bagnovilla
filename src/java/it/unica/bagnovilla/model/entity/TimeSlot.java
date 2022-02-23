@@ -5,6 +5,7 @@
  */
 package it.unica.bagnovilla.model.entity;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -13,16 +14,16 @@ import java.time.LocalDateTime;
  */
 public class TimeSlot {
 
-    private LocalDateTime booking_date;
+    private LocalDate booking_date;
     private boolean is_morning;
     private int aviable_spots;
     private int idLifeguard;
     
-    public LocalDateTime getBooking_date() {
+    public LocalDate getBooking_date() {
         return booking_date;
     }
 
-    public void setBooking_date(LocalDateTime booking_date) {
+    public void setBooking_date(LocalDate booking_date) {
         this.booking_date = booking_date;
     }
 

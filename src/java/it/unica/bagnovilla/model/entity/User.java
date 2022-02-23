@@ -5,6 +5,7 @@
  */
 package it.unica.bagnovilla.model.entity;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -18,13 +19,48 @@ public class User {
     private boolean is_admin;
     private String name;
     private String last_name;
-    private LocalDateTime birth_date;
+    private LocalDate birth_date;
     private String fiscal_code;
     private String sex;
     private String email;
     private String telephone;
     private String password;
     private String foto;
+    
+    public String[] getAllAttributesNames(){
+        String[] attributes = new String[]
+        {"username",
+        "want_invoice",
+        "is_admin",
+        "name",
+        "last_name",
+        "birth_date",
+        "fiscal_code",
+        "sex",
+        "email",
+        "telephone",
+        "password",
+        "foto"};
+        return attributes;
+    }
+    
+    public Object[] getUserAsArray(){
+        Object[] o = new Object[12];
+        o[0] = username;
+        o[1] = want_invoice;
+        o[2] = is_admin;
+        o[3] = name;
+        o[4] = last_name;
+        o[5] = birth_date;
+        o[6] = fiscal_code;
+        o[7] = sex;
+        o[8] = email;
+        o[9] = telephone;
+        o[10] = password;
+        o[11] = foto;
+        
+        return o;
+    }
 
     public String getUsername() {
         return username;
@@ -66,11 +102,11 @@ public class User {
         this.last_name = last_name;
     }
 
-    public LocalDateTime getBirth_date() {
+    public LocalDate getBirth_date() {
         return birth_date;
     }
 
-    public void setBirth_date(LocalDateTime birth_date) {
+    public void setBirth_date(LocalDate birth_date) {
         this.birth_date = birth_date;
     }
 

@@ -5,6 +5,7 @@
  */
 package it.unica.bagnovilla.model.entity;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
  */
 public class ServiceDetails {
     private int id;
-    private LocalDateTime bookingDateTime;
+    private LocalDate bookingDateTime;
     private boolean isMorning;
     private double price;
     private int bookedPlaces;
@@ -27,11 +28,11 @@ public class ServiceDetails {
         this.id = id;
     }
 
-    public LocalDateTime getBookingDateTime() {
+    public LocalDate getBookingDateTime() {
         return bookingDateTime;
     }
 
-    public void setBookingDateTime(LocalDateTime bookingDateTime) {
+    public void setBookingDateTime(LocalDate bookingDateTime) {
         this.bookingDateTime = bookingDateTime;
     }
 

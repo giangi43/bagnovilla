@@ -4,13 +4,6 @@
  * and open the template in the editor.
  */
 package it.unica.bagnovilla.servlet;
-
-import it.unica.bagnovilla.exceptions.InvalidParamException;
-import it.unica.bagnovilla.exceptions.SqlException;
-import it.unica.bagnovilla.utils.Utils;
-import it.unica.bagnovilla.model.factory.UserFactory;
-import it.unica.bagnovilla.model.entity.User;
-
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -19,12 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-/**
- *
- * @author fpw
- */
-@WebServlet(name = "LoginServlet", urlPatterns = {"/LoginServlet"})
-public class LoginServlet extends HttpServlet {
+@WebServlet(name = "LogoutServlet", urlPatterns = {"/logout"})
+public class LogoutServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -38,34 +27,12 @@ public class LoginServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        HttpSession session = request.getSession(); // crea una nuova sessione o recupera quella esistente
-        String username = request.getParameter("username"); // recupera i parametri passati dal client (login.jsp)
-        String password = request.getParameter("password");
-        
-        try{
-            Utils.checkString(username, 4, 20); //valida i parametri ricevuti
-            Utils.checkString(password, 8, 50);
-            
-            User user = UserFactory.getInstance().getUserByUsernamePassword(username, password);
-            
-            //if(login(username, password)){ 
-            if(user != null){ // verifica se le credenziali sono corrette
-                session.setAttribute("username", user.getUsername()); //imposta username
-                session.setAttribute("isAdmin", user.isIs_admin());
-                session.setMaxInactiveInterval(300); // tempo massimo di inattività (in secondi) prima che la sessione scada
-                response.sendRedirect("username"); // redirect alla servlet username
-            }
-            else
-                throw new InvalidParamException("username o password non validi!");
-            
-        }catch(InvalidParamException | SqlException e){
-            session.invalidate(); // invlaida sessione
-            request.setAttribute("errorMessage", e.getMessage()); //imposto parametri richiesta 
-            request.setAttribute("link", "login.jsp");
-            request.getRequestDispatcher("error.jsp").forward(request, response); //inoltra alla pagina di errore
+        HttpSession session = request.getSession(false);
+        if (session != null && session.getAttribute("user") != null) {
+            session.invalidate();
         }
-        
-        
+
+        response.sendRedirect("home");
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -105,5 +72,6 @@ public class LoginServlet extends HttpServlet {
     @Override
     public String getServletInfo() {
         return "Short description";
-    }// </editor-fold>
+    }
 }
+

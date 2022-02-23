@@ -8,10 +8,12 @@ package it.unica.bagnovilla.utils;
 import it.unica.bagnovilla.exceptions.InvalidParamException;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Calendar;
 import java.util.TimeZone;
+import java.sql.Date;
 
 public class Utils {
     
@@ -38,22 +40,6 @@ public class Utils {
         }
     }
     
-    public static String convertTime(long time){
-        Calendar cal = Calendar.getInstance();
-        cal.setTimeZone(TimeZone.getTimeZone("UTC"));
-        cal.setTimeInMillis(time);
-        return (cal.get(Calendar.YEAR)+"_"+(cal.get(Calendar.MONTH)+1)+"_"
-                + cal.get(Calendar.DAY_OF_MONTH)+"_"+ cal.get(Calendar.HOUR_OF_DAY)+":"
-                + cal.get(Calendar.MINUTE)+":"+cal.get(Calendar.SECOND));
-    }
     
-    public static LocalDateTime timestampToLocalDateTime (Timestamp ts){
-        LocalDateTime localDt = null;
-                if(ts != null){
-                    localDt = LocalDateTime.ofInstant(
-                            Instant.ofEpochMilli(ts.getTime()),
-                            ZoneOffset.UTC);
-                }
-        return localDt;
-    }
+    
 }

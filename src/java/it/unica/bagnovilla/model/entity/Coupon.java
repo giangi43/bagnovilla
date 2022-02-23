@@ -5,6 +5,7 @@
  */
 package it.unica.bagnovilla.model.entity;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -14,8 +15,8 @@ import java.time.LocalDateTime;
 public class Coupon {
     private String code;
     private String username;
-    private LocalDateTime expiryDate;
-    private LocalDateTime creationDate;
+    private LocalDate expiryDate;
+    private LocalDate creationDate;
 
     public String getCode() {
         return code;
@@ -33,19 +34,19 @@ public class Coupon {
         this.username = username;
     }
 
-    public LocalDateTime getExpiryDate() {
+    public LocalDate getExpiryDate() {
         return expiryDate;
     }
 
-    public void setExpiryDate(LocalDateTime expiryDate) {
+    public void setExpiryDate(LocalDate expiryDate) {
         this.expiryDate = expiryDate;
     }
 
-    public LocalDateTime getCreationDate() {
+    public LocalDate getCreationDate() {
         return creationDate;
     }
 
-    public void setCreationDate(LocalDateTime creationDate) {
+    public void setCreationDate(LocalDate creationDate) {
         this.creationDate = creationDate;
     }
     
