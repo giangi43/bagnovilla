@@ -3,16 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package it.unica.bagnovilla.model;
+package it.unica.bagnovilla.model.entity;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  *
  * @author fpw
  */
 public class User {
-    private long id;
     private String username;
     private boolean want_invoice;
     private boolean is_admin;
@@ -24,22 +24,7 @@ public class User {
     private String email;
     private String telephone;
     private String password;
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
+    private String foto;
 
     public String getUsername() {
         return username;
@@ -120,11 +105,27 @@ public class User {
     public void setTelephone(String telephone) {
         this.telephone = telephone;
     }
-    
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getFoto() {
+        return foto;
+    }
+
+    public void setFoto(String foto) {
+        this.foto = foto;
+    }
+
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 97 * hash + (int) (this.id ^ (this.id >>> 32));
+        hash = 31 * hash + Objects.hashCode(this.username);
         return hash;
     }
 
@@ -140,10 +141,13 @@ public class User {
             return false;
         }
         final User other = (User) obj;
-        if (this.id != other.id) {
+        if (!Objects.equals(this.username, other.username)) {
             return false;
         }
         return true;
     }
+
+    
+    
     
 }

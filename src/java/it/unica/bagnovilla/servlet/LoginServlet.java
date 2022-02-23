@@ -7,8 +7,8 @@ package it.unica.bagnovilla.servlet;
 
 import it.unica.bagnovilla.exceptions.InvalidParamException;
 import it.unica.bagnovilla.utils.Utils;
-import it.unica.bagnovilla.model.UserFactory;
-import it.unica.bagnovilla.model.User;
+import it.unica.bagnovilla.model.factory.UserFactory;
+import it.unica.bagnovilla.model.entity.User;
 
 import java.io.IOException;
 import javax.servlet.ServletException;

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package it.unica.bagnovilla.model;
+package it.unica.bagnovilla.model.entity;
 
 import java.time.LocalDateTime;
 
@@ -12,19 +12,12 @@ import java.time.LocalDateTime;
  * @author fpw
  */
 public class TimeSlot {
-    private long id;
+
     private LocalDateTime booking_date;
     private boolean is_morning;
     private int aviable_spots;
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
+    private int idLifeguard;
+    
     public LocalDateTime getBooking_date() {
         return booking_date;
     }
@@ -48,4 +41,14 @@ public class TimeSlot {
     public void setAviable_spots(int aviable_spots) {
         this.aviable_spots = aviable_spots;
     }
+
+    public int getIdLifeguard() {
+        return idLifeguard;
+    }
+
+    public void setIdLifeguard(int idLifeguard) {
+        this.idLifeguard = idLifeguard;
+    }
+    
+
 }
