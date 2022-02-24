@@ -3,15 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package it.unica.ProgettoBalneare.Repos;
+package it.unica.bagnovilla.Repos;
 
-import it.unica.ProgettoBalneare.Db.DatabaseManager;
-import it.unica.ProgettoBalneare.Models.CommonResponse;
-import it.unica.ProgettoBalneare.Models.InvoiceTableItem;
-import it.unica.ProgettoBalneare.Models.Slot;
-import it.unica.ProgettoBalneare.Models.SlotViewModel;
-import it.unica.ProgettoBalneare.Models.TableHandleReservation;
-import it.unica.ProgettoBalneare.Models.UserModel;
+import it.unica.bagnovilla.Db.DatabaseManager;
+import it.unica.bagnovilla.Models.CommonResponse;
+import it.unica.bagnovilla.Models.InvoiceTableItem;
+import it.unica.bagnovilla.Models.Slot;
+import it.unica.bagnovilla.Models.SlotViewModel;
+import it.unica.bagnovilla.Models.TableHandleReservation;
+import it.unica.bagnovilla.Models.UserModel;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

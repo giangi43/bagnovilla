@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package it.unica.ProgettoBalneare.Servlet;
+package it.unica.bagnovilla.Servlet;
 
-import it.unica.ProgettoBalneare.Models.CommonResponse;
-import it.unica.ProgettoBalneare.Models.UserModel;
-import it.unica.ProgettoBalneare.Repos.BookingRepo;
-import it.unica.ProgettoBalneare.Repos.UserRepo;
+import it.unica.bagnovilla.Models.CommonResponse;
+import it.unica.bagnovilla.Models.UserModel;
+import it.unica.bagnovilla.Repos.BookingRepo;
+import it.unica.bagnovilla.Repos.UserRepo;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;

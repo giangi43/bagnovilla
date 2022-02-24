@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package it.unica.ProgettoBalneare.Models;
+package it.unica.bagnovilla.Models;
 
 /**
  * Fornisce una risposta comune per gestire i poput di errore

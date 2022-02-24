@@ -1,7 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ page import="java.util.ArrayList"%>
-<%@ page import="it.unica.ProgettoBalneare.Models.SlotViewModel"%>
+<%@ page import="it.unica.bagnovilla.Models.SlotViewModel"%>
 
 <section class="calendar-section">
     <div class="month-selector">

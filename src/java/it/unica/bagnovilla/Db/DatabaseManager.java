@@ -1,4 +1,4 @@
-package it.unica.ProgettoBalneare.Db;
+package it.unica.bagnovilla.Db;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

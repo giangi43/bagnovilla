@@ -3,14 +3,17 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package it.unica.ProgettoBalneare.Servlet;
+package it.unica.bagnovilla.Servlet;
 
-import it.unica.ProgettoBalneare.Models.CommonResponse;
-import it.unica.ProgettoBalneare.Models.Slot;
-import it.unica.ProgettoBalneare.Repos.BookingRepo;
+import it.unica.bagnovilla.Models.CommonResponse;
+import it.unica.bagnovilla.Models.InvoiceTableItem;
+import it.unica.bagnovilla.Models.SlotViewModel;
+import it.unica.bagnovilla.Repos.BookingRepo;
+import it.unica.bagnovilla.Repos.InvoiceRepo;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -22,8 +25,8 @@ import javax.servlet.http.HttpSession;
  *
  * @author fpw
  */
-@WebServlet(name = "AdminAddSlot", urlPatterns = {"/addSlot"})
-public class AdminAddSlot extends HttpServlet {
+@WebServlet(name = "InvoiceServlet", urlPatterns = {"/getInvoices"})
+public class InvoiceServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -37,44 +40,34 @@ public class AdminAddSlot extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        try {
-            /* prendo la sessione e controllo l'utente loggato sia l'admin */
-            HttpSession session = request.getSession(false);
+         try {
+             /* prendo la sessione e controllo sia un utente semplice*/
+            HttpSession session = request.getSession(true);
             String username = session != null ? (String) session.getAttribute("user") : null;
             String userRole = session != null ? (String) session.getAttribute("userRole") : null;
-            long userId = session != null ? (long)session.getAttribute("userId") : -1;
-            if (username == null || userRole == null || !userRole.equals("admin") || userId == -1) {
+            Long userId = session != null ? (Long)session.getAttribute("userId") : null;
+            if (username == null || !userRole.equals("simple") || userId == null) {
                 throw new Exception("Errore: si sta provando ad entrare nella sezione personale senza essere loggati o senza essere autorizzati");
-            }    
-        
-            /* prendo dati del form utente e li metto nel modello da passare al repo*/
-            Slot reservation = new Slot(
-                LocalDate.parse((String)request.getParameter("Fdt")),
-                request.getParameter("Fslot").equals("Mattina") ? "AM" : "PM",
-                Integer.parseInt(request.getParameter("Naccomodation"))
-            );
-            
-            /* Attenzione a chi cerca di generare posti malevolmente */
-            if (reservation.getNumPlaces() < 0) {
-                throw new Exception("Non è possibile inserire un numero negativo di posti");
             }
             
-            /* Effettuo l'inserimento sul db e controllo l'esito */
-            CommonResponse res = (BookingRepo.getInstance()).addSlot(reservation); 
-            if(!res.result){
+            /* recupero i dati dal db e se non ci sono problemi restituisco la pagina renderizzata con jsp*/
+            CommonResponse res = InvoiceRepo.getInstance().getInvoicesByUser(userId);
+            if(res.result) {
+                ArrayList<InvoiceTableItem> tblInvoices = (ArrayList<InvoiceTableItem> ) res.payload;
+                request.setAttribute("tblInvoices", tblInvoices);
+
+                request.getRequestDispatcher("invoicesRows.jsp").forward(request, response);
+            } else {
+                /* in caso di errore rilancio l'eccezione per visualizzare il messaggio nella pagina di errore */
                 throw new Exception(res.message);
             }
             
-            /* Invio una risposta testuale in caso di successo per mostrare un popup a front end */
-            response.setContentType("text/plain");
-            response.setCharacterEncoding("UTF-8");
-            response.getWriter().write("Slot inserito correttamente");
         } catch (Exception e) {
-            //request.setAttribute("errorMessage", e.getMessage());
-            //request.getRequestDispatcher("ErrorHandle.jsp").forward(request, response);
-            response.getWriter().write("Error: " + e.getMessage());
+            /* forward to error page */
+            request.setAttribute("errorMessage", e.getMessage());
+            request.getRequestDispatcher("invoicesRows.jsp").forward(request, response);
             System.out.println(e.getMessage());
-        } 
+        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

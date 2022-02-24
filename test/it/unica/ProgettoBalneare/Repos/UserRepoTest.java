@@ -5,8 +5,9 @@
  */
 package it.unica.ProgettoBalneare.Repos;
 
-import it.unica.ProgettoBalneare.Models.CommonResponse;
-import it.unica.ProgettoBalneare.Models.UserModel;
+import it.unica.bagnovilla.Repos.UserRepo;
+import it.unica.bagnovilla.Models.CommonResponse;
+import it.unica.bagnovilla.Models.UserModel;
 import java.time.LocalDate;
 import org.testng.Assert;
 import org.testng.annotations.*;

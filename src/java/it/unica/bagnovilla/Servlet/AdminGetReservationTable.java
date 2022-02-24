@@ -3,13 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package it.unica.ProgettoBalneare.Servlet;
+package it.unica.bagnovilla.Servlet;
 
-import it.unica.ProgettoBalneare.Models.CommonResponse;
-import it.unica.ProgettoBalneare.Models.Slot;
-import it.unica.ProgettoBalneare.Models.UserTableItem;
-import it.unica.ProgettoBalneare.Repos.BookingRepo;
-import it.unica.ProgettoBalneare.Repos.UserRepo;
+import it.unica.bagnovilla.Models.CommonResponse;
+import it.unica.bagnovilla.Models.SlotViewModel;
+import it.unica.bagnovilla.Models.TableHandleReservation;
+import it.unica.bagnovilla.Repos.BookingRepo;
+import it.unica.bagnovilla.Repos.InvoiceRepo;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
@@ -25,8 +25,8 @@ import javax.servlet.http.HttpSession;
  *
  * @author fpw
  */
-@WebServlet(name = "AdminGetUserTable", urlPatterns = {"/getTblUser"})
-public class AdminGetUserTable extends HttpServlet {
+@WebServlet(name = "AdminGetReservationTable", urlPatterns = {"/getReservationTable"})
+public class AdminGetReservationTable extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -40,43 +40,37 @@ public class AdminGetUserTable extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-       try {
-            /* prendo la sessione e controllo l'utente loggato sia l'admin */
+        try (PrintWriter out = response.getWriter()) {
+            /* prendo dati dall'utente e verifico che sia loggato e che sia admin */
             HttpSession session = request.getSession(false);
             String username = session != null ? (String) session.getAttribute("user") : null;
             String userRole = session != null ? (String) session.getAttribute("userRole") : null;
             long userId = session != null ? (long)session.getAttribute("userId") : -1;
-            if (username == null || userRole == null || !userRole.equals("admin") || userId == -1) {
+            if (username == null || userRole == null || userId == -1) {
                 throw new Exception("Errore: si sta provando ad entrare nella sezione personale senza essere loggati o senza essere autorizzati");
-            }    
-        
-            /* prendo leggo i parametri di ordinamento che mi sono stati passati
-            *  forzo il loro stato per essere SOLO tra uno di quelli ammessi visto che jdbc non mi fa mettere le colonne
-            *  e cerco di proteggermi da solo contro sql injection */
-            String sortBy = request.getParameter("sortBy");
-            String sortType = request.getParameter("sortType");
-            if( !(sortBy.equals("surname") || sortBy.equals("tot_num_res") || sortBy.equals("")) ||
-                    !(sortType.equals("asc") || sortType.equals("desc") || sortType.equals("")) ) {
-                throw new Exception("si sta cercando di mettere valori non ammessi nella query per prendere gli utenti");
-            }
+            }           
             
-            
-            /* Effettuo l'inserimento sul db e controllo l'esito */
-            CommonResponse res = UserRepo.getInstance().getUsersTable(sortBy, sortType); 
-            if(!res.result){
+            /* processo la richiesta lato db */
+            CommonResponse res = InvoiceRepo.getInstance().getProcessInvoiceTable();
+                    
+            if(res.result) {
+               ArrayList<TableHandleReservation> tbl = (ArrayList<TableHandleReservation>) res.payload;
+               request.setAttribute("reservationTable", tbl);
+
+                request.getRequestDispatcher("ReservationTblSection.jsp").forward(request, response);
+            } else {
                 throw new Exception(res.message);
             }
-            
-            /* renedrizzo la tabella e la attacco alla DOM */
-            ArrayList<UserTableItem> tblUsers = (ArrayList<UserTableItem>)res.payload;
-            request.setAttribute("tblUser", tblUsers);
-            request.getRequestDispatcher("TblUserSection.jsp").forward(request, response);
-            
+
+
+           
         } catch (Exception e) {
+            /* forward to error page */
             request.setAttribute("errorMessage", e.getMessage());
             request.getRequestDispatcher("ErrorHandle.jsp").forward(request, response);
-           
-        } 
+            System.out.println(e.getMessage());
+        }
+        
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

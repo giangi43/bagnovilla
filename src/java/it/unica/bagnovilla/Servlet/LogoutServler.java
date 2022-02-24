@@ -3,11 +3,8 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package it.unica.ProgettoBalneare.Servlet;
+package it.unica.bagnovilla.Servlet;
 
-import it.unica.ProgettoBalneare.Models.CommonResponse;
-import it.unica.ProgettoBalneare.Models.UserModel;
-import it.unica.ProgettoBalneare.Repos.UserRepo;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
@@ -21,8 +18,8 @@ import javax.servlet.http.HttpSession;
  *
  * @author fpw
  */
-@WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
-public class LoginServlet extends HttpServlet {
+@WebServlet(name = "LogoutServler", urlPatterns = {"/logout"})
+public class LogoutServler extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -37,40 +34,17 @@ public class LoginServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         
-        HttpSession session = request.getSession(); // crea una nuova sessione o recupera quella esistente
-        String user = request.getParameter("Fuser"); // recupera i parametri passati dal client (login.jsp)
-        String pass = request.getParameter("Fpass");
+        /* Prendo la sessione */
+        HttpSession session = request.getSession(false);
         
-        try{
-            /* prendo utente dal DB */
-            CommonResponse userDBResult = UserRepo.getInstance().getUserByUsername(user);
-            // controllo sia stato trovato altrimenti lo gestisco come errore
-            if (!userDBResult.result){
-                throw new Exception("Errore durante il recupero dell'utente: " + userDBResult.message);
-            } 
-            // cast da risposta a oggetto Utente
-            UserModel dbUser = (UserModel)userDBResult.payload;
-            
-            /* Controllo la password corrisponda */
-            if(dbUser != null && dbUser.getPassword().equals(pass)){ 
-                session.setAttribute("user", dbUser.getUsername());
-                session.setAttribute("userRole", dbUser.isIsAdmin()?"admin":"simple");
-                session.setAttribute("userId", dbUser.getId());
-                session.setAttribute("userInvoiceOptIn", dbUser.isInvoiceOptIn());
-                session.setMaxInactiveInterval(1800); // timeout scadenza sessione 30 minuti
-                response.getWriter().write("Login effettuato correttamente");
-                //response.sendRedirect("index.jsp");
-            }
-            else
-                throw new Exception("Errore: password errata");
-            
-        }catch(Exception e){
+        /*  */
+        if(session != null && session.getAttribute("user") != null){
             session.invalidate();
-            request.setAttribute("errorMessage", e.getMessage()); 
-            request.setAttribute("link", "login.jsp");
-            response.getWriter().write(e.getMessage());
-            //request.getRequestDispatcher("error.jsp").forward(request, response); 
+            response.getWriter().write("Logout effettuato correttamente");
+        }else{
+            response.getWriter().write("Errore: errore durante il logout, probabilmente la sessione era scaduta");
         }
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

@@ -3,13 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package it.unica.ProgettoBalneare.Servlet;
+package it.unica.bagnovilla.Servlet;
 
-import it.unica.ProgettoBalneare.Models.CommonResponse;
-import it.unica.ProgettoBalneare.Models.InvoiceTableItem;
-import it.unica.ProgettoBalneare.Models.SlotViewModel;
-import it.unica.ProgettoBalneare.Repos.BookingRepo;
-import it.unica.ProgettoBalneare.Repos.InvoiceRepo;
+import it.unica.bagnovilla.Models.CommonResponse;
+import it.unica.bagnovilla.Models.Slot;
+import it.unica.bagnovilla.Models.SlotViewModel;
+import it.unica.bagnovilla.Repos.BookingRepo;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
@@ -25,8 +24,8 @@ import javax.servlet.http.HttpSession;
  *
  * @author fpw
  */
-@WebServlet(name = "InvoiceServlet", urlPatterns = {"/getInvoices"})
-public class InvoiceServlet extends HttpServlet {
+@WebServlet(name = "AdminGetSlotCalendar", urlPatterns = {"/getSlotCalendar"})
+public class AdminGetSlotCalendar extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -39,24 +38,44 @@ public class InvoiceServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         response.setContentType("text/html;charset=UTF-8");
-         try {
-             /* prendo la sessione e controllo sia un utente semplice*/
+        try {
+            /* In questo caso non controllo che l'utente sia registrato perche boglio far vedere il calendario a tutti
+            gli utenti e anche visitatori, tuttavia una sessione mi serve per tenere conto del mese corrente */
             HttpSession session = request.getSession(true);
-            String username = session != null ? (String) session.getAttribute("user") : null;
-            String userRole = session != null ? (String) session.getAttribute("userRole") : null;
-            Long userId = session != null ? (Long)session.getAttribute("userId") : null;
-            if (username == null || !userRole.equals("simple") || userId == null) {
-                throw new Exception("Errore: si sta provando ad entrare nella sezione personale senza essere loggati o senza essere autorizzati");
+            
+            /* data di visualizzazione presa dalla sessione, se assente mese corrente */
+            String strDate =(String) session.getAttribute("currentDate");
+            LocalDate visualizedDate;
+            if (strDate != null && !strDate.isEmpty()){
+                visualizedDate = LocalDate.parse(strDate);
+                session.setAttribute("currentDate", strDate);
+            } else {
+                visualizedDate = LocalDate.now().withDayOfMonth(1);
+                session.setAttribute("currentDate", visualizedDate.toString());
+            }
+            
+            /* Gestisco le frecccette di navigazione per spostarmi nel mese 
+            *  se ricevo il parametro azione allora cambio mese in sessione */
+            String action = request.getParameter("navigationAction");
+            if(action != null && !action.isEmpty()) {
+                if(action.equals("nextMonth")){
+                    visualizedDate = visualizedDate.withMonth(visualizedDate.getMonthValue()+1);
+                    session.setAttribute("currentDate", visualizedDate.toString());
+                } else if(action.equals("previousMonth")) {
+                    visualizedDate = visualizedDate.withMonth(visualizedDate.getMonthValue()-1);
+                    session.setAttribute("currentDate", visualizedDate.toString());
+                }
             }
             
             /* recupero i dati dal db e se non ci sono problemi restituisco la pagina renderizzata con jsp*/
-            CommonResponse res = InvoiceRepo.getInstance().getInvoicesByUser(userId);
+            CommonResponse res = BookingRepo.getInstance().getSlotCalendar(visualizedDate);
             if(res.result) {
-                ArrayList<InvoiceTableItem> tblInvoices = (ArrayList<InvoiceTableItem> ) res.payload;
-                request.setAttribute("tblInvoices", tblInvoices);
+                ArrayList<SlotViewModel> a = (ArrayList<SlotViewModel>) res.payload;
+                request.setAttribute("fullSlots", a);
 
-                request.getRequestDispatcher("invoicesRows.jsp").forward(request, response);
+                request.getRequestDispatcher("CalendarSection.jsp").forward(request, response);
             } else {
                 /* in caso di errore rilancio l'eccezione per visualizzare il messaggio nella pagina di errore */
                 throw new Exception(res.message);
@@ -65,9 +84,10 @@ public class InvoiceServlet extends HttpServlet {
         } catch (Exception e) {
             /* forward to error page */
             request.setAttribute("errorMessage", e.getMessage());
-            request.getRequestDispatcher("invoicesRows.jsp").forward(request, response);
+            request.getRequestDispatcher("ErrorHandle.jsp").forward(request, response);
             System.out.println(e.getMessage());
         }
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

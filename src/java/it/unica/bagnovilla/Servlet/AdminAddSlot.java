@@ -3,16 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package it.unica.ProgettoBalneare.Servlet;
+package it.unica.bagnovilla.Servlet;
 
-import it.unica.ProgettoBalneare.Models.CommonResponse;
-import it.unica.ProgettoBalneare.Models.TableHandleReservation;
-import it.unica.ProgettoBalneare.Repos.BookingRepo;
-import it.unica.ProgettoBalneare.Repos.InvoiceRepo;
+import it.unica.bagnovilla.Models.CommonResponse;
+import it.unica.bagnovilla.Models.Slot;
+import it.unica.bagnovilla.Repos.BookingRepo;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -24,8 +22,8 @@ import javax.servlet.http.HttpSession;
  *
  * @author fpw
  */
-@WebServlet(name = "AdminProcessReservation", urlPatterns = {"/processReservation"})
-public class AdminProcessReservation extends HttpServlet {
+@WebServlet(name = "AdminAddSlot", urlPatterns = {"/addSlot"})
+public class AdminAddSlot extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -39,34 +37,44 @@ public class AdminProcessReservation extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        
         try {
-            /* prendo dati dall'utente e verifico che sia loggato e che sia admin */
+            /* prendo la sessione e controllo l'utente loggato sia l'admin */
             HttpSession session = request.getSession(false);
             String username = session != null ? (String) session.getAttribute("user") : null;
             String userRole = session != null ? (String) session.getAttribute("userRole") : null;
             long userId = session != null ? (long)session.getAttribute("userId") : -1;
-            if (username == null || userRole == null || userId == -1) {
+            if (username == null || userRole == null || !userRole.equals("admin") || userId == -1) {
                 throw new Exception("Errore: si sta provando ad entrare nella sezione personale senza essere loggati o senza essere autorizzati");
+            }    
+        
+            /* prendo dati del form utente e li metto nel modello da passare al repo*/
+            Slot reservation = new Slot(
+                LocalDate.parse((String)request.getParameter("Fdt")),
+                request.getParameter("Fslot").equals("Mattina") ? "AM" : "PM",
+                Integer.parseInt(request.getParameter("Naccomodation"))
+            );
+            
+            /* Attenzione a chi cerca di generare posti malevolmente */
+            if (reservation.getNumPlaces() < 0) {
+                throw new Exception("Non è possibile inserire un numero negativo di posti");
             }
             
-            /* prendo e controllo l'input passatomi dal form */
-            long formInvoiceId = Long.parseLong(request.getParameter("Id"));
-            int price = Integer.parseInt(request.getParameter("price"));
-            String desctioption = request.getParameter("description");
-
-            /* processo la richiesta lato db */
-            CommonResponse res = InvoiceRepo.getInstance().processInvoice(formInvoiceId, price, desctioption);
-                    
-            if(!res.result) {
+            /* Effettuo l'inserimento sul db e controllo l'esito */
+            CommonResponse res = (BookingRepo.getInstance()).addSlot(reservation); 
+            if(!res.result){
                 throw new Exception(res.message);
             }
             
-            response.getWriter().write(res.message);
+            /* Invio una risposta testuale in caso di successo per mostrare un popup a front end */
+            response.setContentType("text/plain");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write("Slot inserito correttamente");
         } catch (Exception e) {
-            response.getWriter().write("Errore: " + e.getMessage());
-        }
-        
+            //request.setAttribute("errorMessage", e.getMessage());
+            //request.getRequestDispatcher("ErrorHandle.jsp").forward(request, response);
+            response.getWriter().write("Error: " + e.getMessage());
+            System.out.println(e.getMessage());
+        } 
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
