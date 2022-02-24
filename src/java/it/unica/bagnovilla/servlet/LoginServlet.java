@@ -44,7 +44,7 @@ public class LoginServlet extends HttpServlet {
         
         try{
             Utils.checkString(username, 4, 20); //valida i parametri ricevuti
-            Utils.checkString(password, 8, 50);
+            Utils.checkString(password, 4, 50);
             
             User user = UserFactory.getInstance().getUserByUsernamePassword(username, password);
             

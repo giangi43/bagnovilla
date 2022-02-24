@@ -20,11 +20,11 @@ and open the template in the editor.
     <body>
        <c:set var="page" value="signup" scope="request"/>
         <jsp:include page="header.jsp"/>
-        <main id="login">
+        <main id="signup">
             <a href="index.jsp">
                 <img title="Logo" alt="Logo di Bagnovilla" src="img/logo.png" width="368" height="73">
             </a>
-            <h1>Login</h1>
+            <h1>Signup</h1>
             <fieldset>
                 <legend> insert data: </legend>
                 <form action="SignUpServlet" method="post">

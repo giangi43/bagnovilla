@@ -104,3 +104,28 @@ INSERT INTO public.service_details(
 	(default, '2022-02-28', true, 22.7, 7, 'x'),
 	(default, '2022-02-28', false, 22.8, 8, 'f'),
 	(default, '2022-02-25', true, 22.9, 9, 's');
+	
+INSERT INTO public.user_(
+	is_admin, want_invoice, username, password, name, last_name, birth_date, sex, email, telephone, fiscal_code, foto)
+	VALUES (true, false, 'mamusa', '65793', 'gianluigi', 'mamusa', '1996-05-27', 'm', 'giangi.mamusa@gmail.com',  '3485111187', 'mmsglg96e27b354f', 'io.jpg'),
+	(true, false, 'mamusa2', '65793', 'gian luigi', 'ma musa', '1997-06-28', 'f', 'giangi@gmail.com',  '3485111188', 'mmsglg96e27b354a', 'io2.jpg'),
+	(false, false, 'user1', 'pass1', 'nome1', 'cognome1', '1995-05-27', 'm', 'mail1@gmail.com',  '3485111186', 'cf1', 'user1.jpg'),
+	(false, true, 'user2', 'pass2', 'nome2', 'cognome2', '1994-05-27', 'f', 'mail2@gmail.com',  '3485111185', 'cf2', 'user2.jpg'),
+	(false, true, 'user3', 'pass3', 'nome3', 'cognome3', '1993-05-27', 'o', 'mail3@gmail.com',  '3485111184', 'cf3', 'user3.jpg');
+	
+INSERT INTO public.booking(
+	id, username, id_service)
+	VALUES (default, 'user1', 15),
+	(default, 'user1', 16),
+	(default, 'user2', 17),
+	(default, 'user3', 18),
+	(default, 'user3', 14)
+	;
+	
+INSERT INTO public.invoice(
+	id, username, id_service)
+	VALUES (default, 'user1', 10),
+	(default, 'user1', 13),
+	(default, 'user2', 12),
+	(default, 'user3', 11)
+	;
