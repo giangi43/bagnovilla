@@ -23,20 +23,21 @@ create table lifeguard(
 );
 
 create table time_slot (
-	booking_date date unique not null,
-	is_morning boolean unique not null,
+	booking_date date not null,
+	is_morning boolean not null,
 	aviable_spots int default 20,
-	id_lifeguard serial references lifeguard (id) not null,
+	id_lifeguard serial references lifeguard (id),
 	primary key (booking_date,is_morning)
 );
 
 create table service_details (
 	id serial primary key,
-	booking_date date references time_slot (booking_date) not null,
-	is_morning boolean references time_slot (is_morning) not null,
+	booking_date date not null,
+	is_morning boolean not null,
 	price float not null,
 	booked_places int not null,
-	service_description text
+	service_description text,
+	foreign key(booking_date,is_morning) references time_slot(booking_date,is_morning)
 );
 
 create table booking (
@@ -66,3 +67,40 @@ create table message_ (
 	readed boolean default false,
 	payload text
 );
+
+
+
+INSERT INTO public.lifeguard(id, name, last_name, email, telephone, certificates)VALUES (default, 'marco', 'palla', '@', '123', 'no');
+INSERT INTO public.lifeguard(id, name, last_name, email, telephone, certificates)VALUES (default, 'nicola', 'pinza', '@2', '456', 'si');
+
+
+
+
+INSERT INTO public.time_slot(booking_date, is_morning, aviable_spots, id_lifeguard)	
+VALUES 
+(CURRENT_DATE, true, 30, 1), 
+(CURRENT_DATE, false, 30, 1), 
+('2022-02-25', true, 30, 1), 
+('2022-02-25', false, 30, 1), 
+('2022-02-26', true, 30, 1), 
+('2022-02-26', false, 30, 1),
+('2022-02-27', true, 33, 2), 
+('2022-02-27', false, 33, 2),
+('2022-02-28', true, 32, 2), 
+('2022-02-28', false, 32, 2),
+('2022-03-01', true, 31, 1), 
+('2022-03-01', false, 31, 1);
+
+
+INSERT INTO public.service_details(
+	id, booking_date, is_morning, price, booked_places, service_description)
+	VALUES 
+	(default, '2022-02-25', true, 22.1, 1, 'none'),
+	(default, '2022-02-26', false, 22.2, 2, 'r'),
+	(default, '2022-02-26', true, 22.3, 3, 'f'),
+	(default, '2022-02-27', false, 22.4, 4, 'r'),
+	(default, '2022-02-25', true, 22.5, 5, 's'),
+	(default, '2022-02-25', false, 22.6, 6, 'a'),
+	(default, '2022-02-28', true, 22.7, 7, 'x'),
+	(default, '2022-02-28', false, 22.8, 8, 'f'),
+	(default, '2022-02-25', true, 22.9, 9, 's');

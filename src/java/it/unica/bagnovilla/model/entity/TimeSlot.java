@@ -18,6 +18,15 @@ public class TimeSlot {
     private boolean is_morning;
     private int aviable_spots;
     private int idLifeguard;
+    private int emptySpots;
+
+    public int getEmptySpots() {
+        return emptySpots;
+    }
+
+    public void setEmptySpots(int emptySpots) {
+        this.emptySpots = emptySpots;
+    }
     
     public LocalDate getBooking_date() {
         return booking_date;

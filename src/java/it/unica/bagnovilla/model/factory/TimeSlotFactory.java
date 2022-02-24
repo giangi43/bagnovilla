@@ -117,4 +117,64 @@ public class TimeSlotFactory {
         return null;
     }
     
+    
+      public List<TimeSlot> getNextNTimeSlotsWithOffset(int n, int offset) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet set = null;
+        List<TimeSlot> slots = new ArrayList<>();
+        /*
+        SELECT time_slot.*, sum(booked_places)
+        FROM Time_slot
+        left Join service_details
+        on Time_slot.booking_date = service_details.booking_date AND Time_slot.is_morning = service_details.is_morning
+        WHERE Time_slot.booking_date >= CURRENT_DATE
+        group by time_slot.booking_date, Time_slot.is_morning
+        order by booking_date
+        Limit 10;
+        */
+        try{
+            conn = DatabaseManager.getInstance().getDbConnection();
+            String query = "SELECT time_slot.*, sum(booked_places) "
+                    + "FROM Time_slot "
+                    + "left Join service_details "
+                    + "on Time_slot.booking_date = service_details.booking_date AND Time_slot.is_morning = service_details.is_morning "
+                    + "WHERE Time_slot.booking_date >= CURRENT_DATE "
+                    + "group by time_slot.booking_date, Time_slot.is_morning "
+                    + "order by booking_date "
+                    + "Limit ? "
+                    + "Offset ? ";
+            stmt = conn.prepareStatement(query);
+            stmt.setInt(1, n);
+            stmt.setInt(2, offset);
+            set = stmt.executeQuery();
+            
+            while(set.next()){
+                TimeSlot slot = new TimeSlot();
+                
+                slot.setIs_morning(set.getBoolean("is_morning"));
+   
+                slot.setBooking_date(FactoryUtil.sqlTimestampToLocalDate(set.getTimestamp("booking_date")));                
+               
+                slot.setAviable_spots(set.getInt("aviable_spots"));
+                
+                slot.setIdLifeguard(set.getInt("id_lifeguard"));
+                try{
+                    slot.setEmptySpots(slot.getAviable_spots() - set.getInt("sum"));
+                }catch (Exception e){
+                    slot.setEmptySpots(slot.getAviable_spots());
+                }
+                slots.add(slot);
+            }
+            return slots;
+        }catch(SQLException e){
+            Logger.getLogger(TimeSlotFactory.class.getName()).log(Level.SEVERE, null, e);
+        }finally{
+            try{ set.close(); } catch (Exception e){}
+            try{ stmt.close();} catch(Exception e){}
+            try{ conn.close();} catch(Exception e){}
+        }
+        return null;
+    }
+    
 }
