@@ -1,0 +1,232 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Sep 3, 2021, 3:45:47 PM
+    Author     : fpw
+*/
+
+/* aggiungo font Roboto caricato in locale */
+@font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 400;
+    src: local(''),
+    url('../fonts/roboto-v27-latin-regular.woff2') format('woff2'),
+    url('../fonts/roboto-v27-latin-regular.woff') format('woff');
+}
+
+* {
+    box-sizing: border-box;
+}
+::placeholder{
+    color: rgba(255, 255, 255,0.7);
+    font-weight:lighter;
+    font-size: 1.2em;
+}
+body {
+    background-color: #00719c ;
+    /* Impostazione font per intero sito */
+    color: white;
+    font-family: 'Roboto', sans-serif;
+}
+h2 {
+    font-size: 1.3em;
+}
+input[type=submit], .btn-nav, .a-to-btn {
+    border: none;
+    color: white;
+    background-color: rgba(16, 231, 208, 0.75); /* alpha cosi quando passi sopra diventa acceso */
+    padding: 15px 32px;
+    display: inline-block;
+    font-size: 1.2em;
+}
+input[type=submit]:hover, .btn-nav:hover, .a-to-btn:hover {
+    background-color: #10E7D0;
+    font-size: 1.3em;
+}
+input[type=reset] {
+    border: none;
+    color: white;
+    background-color: rgba(247, 158, 2, 0.75);
+    padding: 15px 32px;
+    display: inline-block;
+    font-size: 1.2em;
+}
+input[type=reset]:hover {
+    background-color: #F79E02;
+    font-size: 1.3em;
+}
+input[type=text],
+input[type=password],
+input[type=date],
+input[type=email],
+input[type=tel],
+input[type=number] {
+    width: 100%; /* per mandare a capo senza <br> */
+    background-color: rgba(255,255,255,0.05); /* sfondo selezione trasparente ma un po piu chiaro */
+    border-radius: 0.5em; /* bordo lievemente smussato */
+
+    /* Più grande e spazioso */
+    padding: 10px 15px;
+    margin: 10px 0;
+
+    /* Effetto sottolineatura arancione (complementare) */
+    border: none;
+    border-bottom-width: 2px;
+    border-bottom-style: solid;
+    border-bottom-color: #F79E02;
+
+    /* Testo bianco: coerente ed elegante */
+    color: white;
+}
+input[type=text]:hover,
+input[type=password]:hover,
+input[type=date]:hover,
+input[type=email]:hover,
+input[type=tel]:hover,
+input[type=number]:hover {
+    background-color: rgba(255, 255, 255,0.2);
+}
+input[type=text]:focus-visible,
+input[type=password]:focus-visible,
+input[type=date]:focus-visible,
+input[type=email]:focus-visible,
+input[type=tel]:focus-visible,
+input[type=number]:focus-visible {
+    /* evita la comparsa di un alone bruttissimo quando si clicca il campo */
+    outline: none;
+    /* ingrandisco la sottolineatura per dare evidenza si sia cliccato */
+    border-bottom-width: 4px;
+    background-color: rgba(255, 255, 255,0.2);
+    /* Effetto Zoom! */
+    font-size: 1.1em;
+}
+input[type=radio] {
+    /* Più grande e spazioso */
+    margin: 0 5px 15px 20px;
+    width: 1.4em;
+    height: 1.4em;
+}
+input[type=text]:invalid{
+    /* magari meglio al submit.. */
+}
+#msgBar {
+    position: fixed;
+    max-width: 35%;
+    margin: 5% auto;
+    left: 0;
+    right: 0;
+    bottom: 10%;
+    display: none;
+    padding: 3vh 10vh;
+    border-radius: 0.2em;
+    color: white;
+    font-size: 0.8em;
+    font-weight: bold;
+    text-align: center;
+}
+#msgBar.msg-error {
+    background: #F79E02;
+    display: block;
+}
+#msgBar.msg-info {
+    background: #10E7D0;
+    display: block;
+}
+.site {
+    margin: auto; /* Center the main div */
+    padding: 0.6%; /* in percentuale non spreca spazio su dispositivi piccoli come telefoni */
+    background-color: #009bd6;/*#1B9CE5;*/
+    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.3);
+
+    /* Flexbox layout */
+    display: flex;
+    min-height: 50vh;
+    flex-direction: column;
+    width: 70%;
+}
+nav {
+    display: flex;
+    flex-wrap: wrap;
+}
+nav .btn-nav, .a-to-btn{
+    flex: 1;
+    margin: 2px 5px;
+    text-align: center;
+    font-weight: bold;
+    text-decoration: none;
+    box-shadow: 8px 6px 10px rgba(0,0,0,0.1); /* leggera ombra rilievo */
+}
+main {
+}
+main > section, main > article {
+    flex: 1;
+    /*min-height: 60vh;*/
+}
+header, footer {
+    min-height: 15vh;
+    overflow: hidden;
+}
+header, footer, section, article, nav {
+    /*border: 3px solid rgba(255,255,255,0.1);  change .01 alpha to something else then*/
+    /* Everyone feels better with a bit of padding */
+    background: #00b8ff; /*#6CDAEE;*/
+    padding: 1em;
+    margin-bottom: 1em;
+    box-shadow: 0px 7px 6px rgba(0,0,0,0.19); /* ombreggiatura per dare effetto rilievo */
+}
+header {
+    text-align: center;
+}
+header > h1 {
+    margin: 0;
+}
+header p.sub {
+    font-style: italic;
+    margin-bottom: 0;
+    text-align: right;
+}
+header .title-container {
+    display: inline-block;
+}
+.footer-center-rows {
+    /* centro le info presenti nel footer */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    padding: 1%;
+
+}
+.footer-center-rows .img-logo {
+    /* setto la dimensione del logo in base all altezza della pagina e inverto il colore perche nero non ci sta bene */
+    height: 15vh;
+    filter: invert(100%);
+}
+.footer-center-rows .img-logo + .stacked-infos {
+    margin-left: 2%;
+}
+/* Schermi larghi */
+@media screen and (max-width: 1200px){
+    .site {
+        width: 85%;
+    }
+}
+/* Tablet e laptop piccoli */
+@media screen and (max-width: 800px){
+    .site {
+        width: 95%;
+    }
+}
+/* Telefoni datati o finestra rimpicciolita */
+@media screen and (max-width: 800px){
+    .site {
+        width: 100%;
+    }
+    nav .btn-nav {
+        flex-basis: 100%;
+    }
+}

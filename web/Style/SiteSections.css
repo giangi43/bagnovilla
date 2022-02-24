@@ -1,0 +1,204 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Sep 3, 2021, 3:46:14 PM
+    Author     : fpw
+*/
+.card-registration,
+.book-slot-section,
+.show-reservations-section,
+.handle-user-section {
+    /* centered registration form */
+    display: flex;
+    justify-content: center;
+}
+.book-slot-section {
+    flex-direction: column;
+    align-items: center;
+}
+.show-reservations-section,
+.handle-user-section {
+    flex-direction: column;
+}
+.show-reservations-section > h2,
+.handle-user-section > h2 {
+    text-align: center;
+}
+.card-registration > div,
+.book-slot-section > div {
+    flex-basis: 50%;
+    overflow: hidden;
+}
+.card-registration .registration-form {
+}
+.lbl-full-width {
+    /* prende intera larghezza */
+    display: inline-block;
+    width: 100%;
+}
+.registration-form-submit {
+    display: flex;
+    justify-content: center;
+}
+.registration-form-submit > input {
+    flex: 1;
+    margin: 0 2px;
+}
+.card-login {
+}
+.card-login .form-login-surround {
+    display: flex;
+    align-items: center;
+    /* A capo responsive automaco sui campi di login*/
+    flex-wrap: wrap;
+}
+.card-login .form-login-surround ._2_3-form {
+    flex: 1;
+    margin: 0 10px 0 10px;
+    min-width: 250px;
+}
+.card-login .form-login-surround ._1_3-form {
+    margin: 0 10px 0 5px;
+}
+.card-login #msg-signup {
+    text-align: right;
+    margin: 0 10px 0 0;
+}
+.card-login a {
+    color: white;
+    font-weight: bold;
+}
+.card-login a:hover {
+    color: white;
+    font-weight: bold;
+    font-size: 1.2em;
+}
+.card-login #from-login {
+    margin-bottom: 5px;
+}
+.card-logged-user {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0 10px 0 0;
+    align-items: center;
+}
+.card-logged-user .logged-user-item {
+    flex-basis: auto;
+}
+.card-logged-user .logged-user-item > h2 {
+    margin: 0 20px 0 0;
+}
+.a-to-btn {
+    margin: 10px;
+}
+section.pers-sec {
+    display: flex;
+    flex-direction: column;
+}
+.admin-add-slot,
+section.pers-sec .pers-sec-lvl1-col {
+    display: flex;
+    justify-content: center;
+}
+.admin-item,
+.pers-sec-lvl1-col .personal-info-form {
+    flex-basis: 50%;
+}
+.centered-element {
+    margin-top: 1vh;
+}
+.center-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#add-slot-btn {
+    flex: 1;
+}
+.reservation-tbl-container {
+    overflow-x:auto;
+}
+#reservation-tbl th {
+    min-width: 100px;
+}
+#user-tbl {
+    width: 100%;
+    text-align: center;
+}
+.invoice-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.invoice-section .invoice-cont-width {
+    width: 80%;
+}
+.btn-sort {
+    margin: 0 0 0 6px;
+    border-radius: 0;
+    background-color: rgba(16, 231, 208, 0.5);
+    border: none;
+    width: 36px;
+    height: 17px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.19);
+    color: #00b8ff;
+}
+.invoices-row {
+    text-align: center;
+}
+#invoice-tbl {
+    padding: 3% 0 0 0;
+}
+.invoice-container {
+    /* tabella responsive */
+    overflow: auto;
+}
+.btn-sort.active {
+    background-color: #E693FF;
+    color: white;
+}
+/* quando ci passi sopra diventa piu brillante per far capire di cliccare */
+.btn-sort:hover {
+    background-color: rgba(16, 231, 208, 1);
+    color: white;
+    font-weight: bold;
+}
+.btn-sort.active:hover {
+    background-color: #A38DFB;
+}
+/* Schermi larghi */
+@media screen and (max-width: 1200px){
+    .admin-item,
+    .card-registration > div {
+        flex-basis: 60%;
+    }
+    .pers-sec-lvl1-col .personal-info-form {
+        flex-basis: 60%;
+    }
+}
+/* Tablet e laptop piccoli */
+@media screen and (max-width: 800px){
+    .admin-item,
+    .card-registration > div,
+    .book-slot-section > div {
+        flex-basis: 80%;
+    }
+    .pers-sec-lvl1-col .personal-info-form {
+        flex-basis: 80%;
+    }
+}
+/* Telefoni datati o finestra rimpicciolita */
+@media screen and (max-width: 800px){
+    .admin-item,
+    .card-registration > div,
+    .book-slot-section > div {
+        flex-basis: 100%;
+    }
+    .pers-sec-lvl1-col .personal-info-form {
+        flex-basis: 100%;
+    }
+}
