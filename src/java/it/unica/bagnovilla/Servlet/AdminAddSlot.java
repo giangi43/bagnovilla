@@ -6,8 +6,8 @@
 package it.unica.bagnovilla.Servlet;
 
 import it.unica.bagnovilla.Models.CommonResponse;
-import it.unica.bagnovilla.Models.Slot;
 import it.unica.bagnovilla.Repos.BookingRepo;
+import it.unica.bagnovilla.model.entity.TimeSlot;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
@@ -48,9 +48,9 @@ public class AdminAddSlot extends HttpServlet {
             }    
         
             /* prendo dati del form utente e li metto nel modello da passare al repo*/
-            Slot reservation = new Slot(
+            TimeSlot reservation = new TimeSlot(
                 LocalDate.parse((String)request.getParameter("Fdt")),
-                request.getParameter("Fslot").equals("Mattina") ? "AM" : "PM",
+                request.getParameter("Fslot").equals("Mattina"),
                 Integer.parseInt(request.getParameter("Naccomodation"))
             );
             

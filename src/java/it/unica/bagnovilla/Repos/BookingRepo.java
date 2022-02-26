@@ -7,9 +7,10 @@ package it.unica.bagnovilla.Repos;
 
 import it.unica.bagnovilla.Db.DatabaseManager;
 import it.unica.bagnovilla.Models.CommonResponse;
-import it.unica.bagnovilla.Models.Slot;
 import it.unica.bagnovilla.Models.SlotViewModel;
 import it.unica.bagnovilla.Models.UserModel;
+import it.unica.bagnovilla.model.entity.TimeSlot;
+import it.unica.bagnovilla.utils.FactoryUtil;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -40,42 +41,45 @@ public class BookingRepo {
         return instance;
     }
     // 
-    public CommonResponse addSlot(Slot reservation){
+    public CommonResponse addSlot(TimeSlot reservation){
         // Connection parameters
         Connection conn= null;
         PreparedStatement stmt = null;
         ResultSet set = null; 
-        Long slotId = null;
+        LocalDate date = null;
+        boolean is_morning = false;
         
         try{
             // Opening Connection
             conn = DatabaseManager.getInstance().getDbConnection();
             // Controllo se esiste gia uno slot e prendo l'id per farci un update sopra
-            String query = "select \"Id\" from available_slot where data = ? and day_part = ?;";
+            String query = "select booking_date, is_morning from time_slot where booking_date = ? and is_morning = ?;";
             stmt = conn.prepareStatement(query);
-            stmt.setObject(1, reservation.getDate());
-            stmt.setString(2, reservation.getTimeslot());
+            stmt.setObject(1, reservation.getBooking_date());
+            stmt.setBoolean(2, reservation.isIs_morning());
             // mando la query a db 
             set = stmt.executeQuery();
             // fetcho l'id che ho ricevuto
             if (set.next()) {
-                slotId = set.getLong("Id");
+                date = FactoryUtil.dateToLocalDate(set.getDate("booking_date"));
+                is_morning = set.getBoolean("is_morning");
             }
             
             /* se lo slot esiste già aggiungo i posti richiesti */
-            if(slotId != null) {
-                query = "update available_slot set n_available = n_available + ? where \"Id\" = ?;";
+            if(date != null) {
+                query = "update time_slot set aviable_spots = ? where booking_date = ? and is_morning = ?;";
                 stmt = conn.prepareStatement(query);
-                stmt.setInt(1, reservation.getNumPlaces());
-                stmt.setLong(2, slotId);
+                stmt.setInt(1, reservation.getAviable_spots());
+                stmt.setDate(2, FactoryUtil.localDateToDate(date));
+                stmt.setBoolean(3, is_morning);
                 stmt.executeUpdate();
             } else {
                 /* se lo slot non esisteva prima allora lo inserisco */
-                query = "insert into available_slot (data, day_part, n_available) values (?, ?, ?);";
+                query = "insert into time_slot (booking_date, is_morning, aviable_spots) values (?, ?, ?);";
                 stmt = conn.prepareStatement(query);
-                stmt.setObject(1, reservation.getDate());
-                stmt.setString(2, reservation.getTimeslot());
-                stmt.setInt(3, reservation.getNumPlaces());
+                stmt.setDate(1, FactoryUtil.localDateToDate(reservation.getBooking_date()));
+                stmt.setBoolean(2, reservation.isIs_morning());
+                stmt.setInt(3, reservation.getAviable_spots());
 
                 /* executing and returning success */
                 stmt.executeUpdate();
@@ -104,7 +108,7 @@ public class BookingRepo {
             // Opening Connection
             conn = DatabaseManager.getInstance().getDbConnection();
             // Prepearing the query ordered by date and then day part so that it will be AM then PM
-            String query = "select \"Id\" , data, day_part, n_available from available_slot where extract('month' from data) = ? order by data, day_part";
+            String query = "select * from time_slot where extract('month' from booking_date) = ? order by booking_date, is_morning";
             stmt = conn.prepareStatement(query);
             stmt.setObject(1, monthYear.getMonthValue());
             
@@ -112,13 +116,13 @@ public class BookingRepo {
         
             /* fetching dei risultati dalla query nel mio modello */
             set = stmt.executeQuery();
-            Queue<Slot> querySlots = new LinkedList<Slot>();
+            Queue<TimeSlot> querySlots = new LinkedList<TimeSlot>();
             while(set.next()){
                 /* creo lo slot e lo metto nel dizionario */
-                Slot slot = new Slot();
-                slot.setDate(LocalDate.parse(set.getString("data")));
-                slot.setNumPlaces(set.getInt("n_available"));
-                slot.setTimeslot(set.getString("day_part"));
+                TimeSlot slot = new TimeSlot();
+                slot.setBooking_date(FactoryUtil.dateToLocalDate(set.getDate("booking_date")));
+                slot.setAviable_spots(set.getInt("aviable_spotd"));
+                slot.setIs_morning(set.getBoolean("is_morning"));
                 
                 querySlots.add(slot);
             }
@@ -148,20 +152,20 @@ public class BookingRepo {
             iterDate = monthYear;
             while(!querySlots.isEmpty()) {
                 /* tolgo l'elemento da spostare dalla coda */
-                Slot dbSlot = querySlots.poll();
+                TimeSlot dbSlot = querySlots.poll();
 
                 /* prendo l'elemento corrispondente dalla lista completa */
                 SlotViewModel matchingSlot = fullSlots.stream()
-                        .filter(x -> x.day == dbSlot.getDate().getDayOfMonth())
+                        .filter(x -> x.day == dbSlot.getBooking_date().getDayOfMonth())
                         .findAny()
                         .orElse(null);
                 
                 /* controllo se am o pm e setto il numero di slot disponibili 
                  * nel posto giusto */
-                if(dbSlot.getTimeslot().equals("AM")) {
-                    matchingSlot.numAm = dbSlot.getNumPlaces();
-                } else if(dbSlot.getTimeslot().equals("PM")) {
-                    matchingSlot.numPm = dbSlot.getNumPlaces();
+                if(dbSlot.isIs_morning()) {
+                    matchingSlot.numAm = dbSlot.getEmptySpots();
+                } else {
+                    matchingSlot.numPm = dbSlot.getEmptySpots();
                 }
             }
             return new CommonResponse(true, "Ok", fullSlots);
@@ -175,7 +179,7 @@ public class BookingRepo {
         }
     }
 
-    public CommonResponse bookSlots(LocalDate fromDate, String fromAmPm, LocalDate toDate, String toAmPm, int numReservedSlots, long userId) {
+    public CommonResponse bookSlots(LocalDate date, boolean isMorning, int numReservedSlots, String username) {
          // Connection parameters
         Connection conn= null;
         PreparedStatement stmt = null;
@@ -185,112 +189,74 @@ public class BookingRepo {
              // Opening Connection
             conn = DatabaseManager.getInstance().getDbConnection();
             // Prepearing the query ordered by date and then day part so that it will be AM then PM
-            String query = "select \"Id\" , data, day_part, n_available from available_slot where data >= ? and data <= ? order by data, day_part";
+            String query = "select time_slot.*,sum(booked_places)"
+                    + " from time_slot"
+                    + " left Join service_details "
+                    + " on Time_slot.booking_date = service_details.booking_date AND Time_slot.is_morning = service_details.is_morning "
+                    + " where booking_date = ? and  is_morning = ?"
+                    + " group by time_slot.booking_date, Time_slot.is_morning "
+                    + " order by booking_date, is_morning";
             stmt = conn.prepareStatement(query);
-            stmt.setObject(1, fromDate);
-            stmt.setObject(2, toDate);
+            stmt.setObject(1, date);
+            stmt.setObject(2, isMorning);
             
             LOG.info("getting timeslots in that range :\n" + stmt.toString());
         
             /* fetching dei risultati dalla query nel mio modello */
             set = stmt.executeQuery();
-            Queue<Slot> querySlots = new LinkedList<Slot>();
-            while(set.next()){
+            TimeSlot slot = new TimeSlot();
+            if(set.next()){
                 /* creo lo slot e lo metto nel dizionario */
-                Slot slot = new Slot();
-                slot.setId(set.getLong("Id"));
-                slot.setDate(LocalDate.parse(set.getString("data")));
-                slot.setNumPlaces(set.getInt("n_available"));
-                slot.setTimeslot(set.getString("day_part"));
-                
-                querySlots.add(slot);
-            }
-            
-            /* in questa lista metterò gli id degli slot da modificare in modo che 
-            *  la query sia una sola update e se fallisse lo farebbe in blocco */
-            ArrayList<Long> slotIdToBeReserved = new ArrayList<Long>();
-            
-            /* ora controllo che ci sia lo spazio per fare l'update
-            *  ciclo con iterDate da from a to date +1 perche controllo il before */
-            LocalDate iterDate = fromDate;
-            while(iterDate.isBefore(toDate.plusDays(1))) {
-                /* questa variabile è un work around dato che gli stream in java sono stateless e vogliono solo effectively final :(  */
-                LocalDate curr = iterDate;
-                /* prendo dal db gli slot per il giorno su cui sto iterando */
-                Slot matchingSlotAm = querySlots.stream()
-                        .filter(x -> (x.getDate().equals(curr) && 
-                                x.getTimeslot().equals("AM")))
-                        .findAny()
-                        .orElse(null);
-                /* prendo anche lo slot PM */
-                Slot matchingSlotPm = querySlots.stream()
-                        .filter(x -> (x.getDate().equals(curr) &&
-                                x.getTimeslot().equals("PM")) )
-                        .findAny()
-                        .orElse(null);
-                
-                /* gestisco il caso in cui l'ultimo giorno lo slot da 
-                *  considerare sia solo AM*/
-                if(iterDate.equals(toDate) && toAmPm.equals("AM")) {
-                    /* controllo solo am */
-                    /* se non sono stati trovati lancio un eccezione */
-                    if (matchingSlotAm == null) {
-                        throw new Exception("Errore: all'interno del range di date "
-                                + "fornito almeno uno slot " + iterDate.toString() 
-                                + " non è stato ancora inserito dall'amministrattore");
-                    }
-                    /* se non bastano i posti lancio un eccezione */
-                    if(matchingSlotAm.getNumPlaces() < numReservedSlots ) {
-                        throw new Error("Errore: non sono disponibili sufficienti "
-                                + "posti per il range di date selezionate, "
-                                + "in particolare nel giorno " + iterDate.toString());
-                    }
-                    slotIdToBeReserved.add(matchingSlotAm.getId());
-                } else {
-                    /* se non sono stati trovati lancio un eccezione */
-                    if (matchingSlotAm == null || matchingSlotPm == null) {
-                        throw new Exception("Errore: all'interno del range di date "
-                                + "fornito almeno uno slot " + iterDate.toString() 
-                                + " non è stato ancora inserito dall'amministrattore");
-                    }
-                    /* se non bastano i posti lancio un eccezione */
-                    if(matchingSlotAm.getNumPlaces() < numReservedSlots || 
-                            matchingSlotPm.getNumPlaces() < numReservedSlots ) {
-                        throw new Error("Errore: non sono disponibili sufficienti "
-                                + "posti per il range di date selezionate, "
-                                + "in particolare nel giorno " + iterDate.toString());
-                    }
-                    slotIdToBeReserved.add(matchingSlotAm.getId());
-                    slotIdToBeReserved.add(matchingSlotPm.getId());
+                slot.setBooking_date(FactoryUtil.dateToLocalDate(set.getDate("booking_date")));
+                slot.setAviable_spots(set.getInt("aviable_spots"));
+                slot.setIs_morning(set.getBoolean("is_morning"));            
+                try{
+                    slot.setEmptySpots(slot.getAviable_spots() - set.getInt("sum"));
+                }catch (Exception e){
+                    slot.setEmptySpots(slot.getAviable_spots());
                 }
-                /* incremento il giorno corrente per continuare il controllo */
-                iterDate = iterDate.plusDays(1);
+            }else{
+                slot=null;
             }
-            /* genero stringa con gli id da modificare, non uso il prepared statement per sostituire il valore alla query
-            *  ma perché sono sicuro della bontà degli id che mi pervengono incontaminati da query qua sopra */
-            String strIds = slotIdToBeReserved.stream().map(x -> x.toString()).collect(Collectors.joining(","));
             
+                      
+            
+                    /* se non sono stati trovati lancio un eccezione */
+            if (slot == null ) {
+                throw new Exception("Errore: non e stato trovato lo slot "
+                        + "in data " + date.toString());
+            }
+            /* se non bastano i posti lancio un eccezione */
+            if (slot.getEmptySpots() < numReservedSlots) {
+                throw new Error("Errore: non sono disponibili sufficienti " + slot.getEmptySpots());
+            }
+            int id = 0;
+            query ="select max(id) from service_details;";
+            stmt = conn.prepareStatement(query);
+            set = stmt.executeQuery();
+            id = 1 + set.getInt("max");
+            
+                           
             /* se siamo arrivati qua allora ci sono i posti necessari per effettuare la prenotazione */
-            query = String.format("update available_slot " +
-                    "set n_available = n_available - ? " +
-                    "where \"Id\" in (%s);", strIds);
+            query = "INSERT INTO public.service_details " 
+                    + " (id, booking_date, is_morning, price, booked_places, service_description) " 
+                    + " VALUES" 
+                    + " (?, ?, ?, 0, ?, 'none');"
+                    + "INSERT INTO public.booking" 
+                    + "	(id, username, id_service)" 
+                    + "	VALUES (default, ?, ?) ";
             
             /* preparo e lancio la query */
             stmt = conn.prepareStatement(query);
-            stmt.setInt(1, numReservedSlots);
-
-            stmt.executeUpdate();
+            stmt.setInt(1, id);
+            stmt.setDate(2, FactoryUtil.localDateToDate(date));
+            stmt.setBoolean(3, isMorning);
+            stmt.setInt(4, numReservedSlots);
+            stmt.setString(5, username);
+            stmt.setInt(6, id);
+            stmt.executeQuery();
             
-            String datePeriodText = "Dal: "+ fromDate.toString() + " " + fromAmPm + " Al: " + toDate.toString() + " " + toAmPm;
-            /* adesso creo la prenotazione vera e propria */
-            query = "insert into reservation (\"Id_user\", num_reserved_slot, reservation_period) " +
-                        "values (?, ?, ?);";
-            stmt = conn.prepareStatement(query);
-            stmt.setLong(1, userId);
-            stmt.setInt(2, numReservedSlots);
-            stmt.setString(3, datePeriodText);
             
-            stmt.executeUpdate();
             return new CommonResponse(true,"Prenotazione avvenuta con successo", null);
                        
         }catch(Exception e){

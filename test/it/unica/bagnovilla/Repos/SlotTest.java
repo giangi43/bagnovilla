@@ -3,12 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package it.unica.ProgettoBalneare.Repos;
+package it.unica.bagnovilla.Repos;
 
 import it.unica.bagnovilla.Repos.BookingRepo;
 import it.unica.bagnovilla.Models.CommonResponse;
 import it.unica.bagnovilla.Models.Slot;
 import it.unica.bagnovilla.Models.UserModel;
+import it.unica.bagnovilla.model.entity.TimeSlot;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import org.testng.Assert;
@@ -28,7 +29,7 @@ public class SlotTest {
     public void testSlot() {
         System.out.println("test add slot");
         
-        Slot reservation = new Slot(LocalDate.parse("2021-08-02"), "PM", 5);
+        TimeSlot reservation = new TimeSlot(LocalDate.parse("2021-08-02"), false, 5);
         CommonResponse result = BookingRepo.getInstance().addSlot(reservation);
         Assert.assertTrue(result.result, "eh no");
     }

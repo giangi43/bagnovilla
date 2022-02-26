@@ -50,8 +50,8 @@ public class BookSlot extends HttpServlet {
             }
             
             /* prendo e controllo l'input passatomi dal form */
-            LocalDate fromDate = LocalDate.parse(request.getParameter("Ffrom"));
-            String fromAmPm = request.getParameter("FfromSlot").equals("Mattina")?"AM":"PM";
+            LocalDate date = LocalDate.parse(request.getParameter("Ffrom"));
+            boolean isMorning = request.getParameter("FfromSlot").equals("Mattina");
             LocalDate toDate = LocalDate.parse(request.getParameter("Fto"));
             String toAmPm = request.getParameter("FtoSlot").equals("Mattina")?"AM":"PM";
             int numReservedSlots = Integer.parseInt(request.getParameter("Fnumplaces"));
@@ -60,7 +60,7 @@ public class BookSlot extends HttpServlet {
                 throw new Exception("Non si può prenotare un numero negativo di slot");
             }
             
-            CommonResponse res = BookingRepo.getInstance().bookSlots(fromDate, fromAmPm, toDate, toAmPm, numReservedSlots, userId);
+            CommonResponse res = BookingRepo.getInstance().bookSlots(date, isMorning, numReservedSlots, username);
             
             response.getWriter().write(res.message);
         } catch (Exception e) {

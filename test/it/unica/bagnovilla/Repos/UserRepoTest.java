@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package it.unica.ProgettoBalneare.Repos;
+package it.unica.bagnovilla.Repos;
 
 import it.unica.bagnovilla.Repos.UserRepo;
 import it.unica.bagnovilla.Models.CommonResponse;
