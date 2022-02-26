@@ -1,0 +1,131 @@
+CREATE TABLE user_ (
+	is_admin boolean default false,
+	want_invoice boolean not null,
+	username varchar(30) primary key,
+	password VARCHAR(20) not null,
+	name VARCHAR(50) not null,
+	last_name VARCHAR(50) not null,
+	birth_date date not null,
+	sex varchar(1) check (sex in('m','f','o')) not null, 
+	email VARCHAR(50) not null,
+	telephone varchar(20) not null,
+	fiscal_code varchar(16) not null,
+	foto VARCHAR(200)
+);
+
+create table lifeguard(
+	id serial primary key,
+	name VARCHAR(50) not null,
+	last_name VARCHAR(50) not null,
+	email VARCHAR(50) not null,
+	telephone varchar(20) not null,
+	certificates varchar(200)
+);
+
+create table time_slot (
+	booking_date date not null,
+	is_morning boolean not null,
+	aviable_spots int default 20,
+	id_lifeguard serial references lifeguard (id),
+	primary key (booking_date,is_morning)
+);
+
+create table service_details (
+	id serial primary key,
+	booking_date date not null,
+	is_morning boolean not null,
+	price float ,
+	booked_places int not null,
+	service_description text,
+	foreign key(booking_date,is_morning) references time_slot(booking_date,is_morning)
+);
+
+create table booking (
+	id serial primary key,
+	username varchar(30) references user_ (username) not null,
+	id_service serial references service_details (id) not null
+);
+
+create table invoice (
+	id serial primary key,
+	username varchar(30) references user_ (username) not null,
+	id_service serial references service_details (id) not null
+);
+
+create table coupon(
+	code varchar(20) primary key,
+	username varchar(30) references user_ (username),
+	expiry_date date not null,
+	creation_date date not null
+);
+
+create table message_ (
+	id serial primary key,
+	sender varchar(30) references user_ (username) not null,
+	reciver varchar(30) references user_ (username) not null,
+	time_stamp timestamp,
+	readed boolean default false,
+	payload text
+);
+
+
+
+INSERT INTO public.lifeguard(id, name, last_name, email, telephone, certificates)VALUES (default, 'marco', 'palla', '@', '123', 'no');
+INSERT INTO public.lifeguard(id, name, last_name, email, telephone, certificates)VALUES (default, 'nicola', 'pinza', '@2', '456', 'si');
+
+
+
+
+INSERT INTO public.time_slot(booking_date, is_morning, aviable_spots, id_lifeguard)	
+VALUES 
+('2022-02-24', true, 30, 1), 
+('2022-02-24', false, 30, 1), 
+('2022-02-25', true, 30, 1), 
+('2022-02-25', false, 30, 1), 
+('2022-02-26', true, 30, 1), 
+('2022-02-26', false, 30, 1),
+('2022-02-27', true, 33, 2), 
+('2022-02-27', false, 33, 2),
+('2022-02-28', true, 32, 2), 
+('2022-02-28', false, 32, 2),
+('2022-03-01', true, 31, 1), 
+('2022-03-01', false, 31, 1);
+
+
+INSERT INTO public.service_details(
+	id, booking_date, is_morning, price, booked_places, service_description)
+	VALUES 
+	(default, '2022-02-25', true, 22.1, 1, 'none'),
+	(default, '2022-02-26', false, 22.2, 2, 'r'),
+	(default, '2022-02-26', true, 22.3, 3, 'f'),
+	(default, '2022-02-27', false, 22.4, 4, 'r'),
+	(default, '2022-02-25', true, 22.5, 5, 's'),
+	(default, '2022-02-25', false, 22.6, 6, 'a'),
+	(default, '2022-02-28', true, 22.7, 7, 'x'),
+	(default, '2022-02-28', false, 22.8, 8, 'f'),
+	(default, '2022-02-25', true, 22.9, 9, 's');
+	
+INSERT INTO public.user_(
+	is_admin, want_invoice, username, password, name, last_name, birth_date, sex, email, telephone, fiscal_code, foto)
+	VALUES (true, false, 'mamusa', '65793', 'gianluigi', 'mamusa', '1996-05-27', 'm', 'giangi.mamusa@gmail.com',  '3485111187', 'mmsglg96e27b354f', 'io.jpg'),
+	(true, false, 'mamusa2', '65793', 'gian luigi', 'ma musa', '1997-06-28', 'f', 'giangi@gmail.com',  '3485111188', 'mmsglg96e27b354a', 'io2.jpg'),
+	(false, false, 'user1', 'pass1', 'nome1', 'cognome1', '1995-05-27', 'm', 'mail1@gmail.com',  '3485111186', 'cf1', 'user1.jpg'),
+	(false, true, 'user2', 'pass2', 'nome2', 'cognome2', '1994-05-27', 'f', 'mail2@gmail.com',  '3485111185', 'cf2', 'user2.jpg'),
+	(false, true, 'user3', 'pass3', 'nome3', 'cognome3', '1993-05-27', 'o', 'mail3@gmail.com',  '3485111184', 'cf3', 'user3.jpg');
+	
+INSERT INTO public.booking(
+	id, username, id_service)
+	VALUES (default, 'user1', 5),
+	(default, 'user1', 6),
+	(default, 'user2', 7),
+	(default, 'user3', 8),
+	(default, 'user3', 9)
+	;
+	
+INSERT INTO public.invoice(
+	id, username, id_service)
+	VALUES (default, 'user1', 1),
+	(default, 'user1', 3),
+	(default, 'user2', 2),
+	(default, 'user3', 4)
+	;
