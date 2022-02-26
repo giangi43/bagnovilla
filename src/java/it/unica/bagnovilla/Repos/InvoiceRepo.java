@@ -8,7 +8,6 @@ package it.unica.bagnovilla.Repos;
 import it.unica.bagnovilla.Db.DatabaseManager;
 import it.unica.bagnovilla.Models.CommonResponse;
 import it.unica.bagnovilla.Models.InvoiceTableItem;
-import it.unica.bagnovilla.Models.Slot;
 import it.unica.bagnovilla.Models.SlotViewModel;
 import it.unica.bagnovilla.Models.TableHandleReservation;
 import it.unica.bagnovilla.Models.UserModel;

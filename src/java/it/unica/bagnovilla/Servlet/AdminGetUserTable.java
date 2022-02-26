@@ -6,7 +6,6 @@
 package it.unica.bagnovilla.Servlet;
 
 import it.unica.bagnovilla.Models.CommonResponse;
-import it.unica.bagnovilla.Models.Slot;
 import it.unica.bagnovilla.Models.UserTableItem;
 import it.unica.bagnovilla.Repos.BookingRepo;
 import it.unica.bagnovilla.Repos.UserRepo;

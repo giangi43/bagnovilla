@@ -107,8 +107,13 @@ public class BookingRepo {
         try{
             // Opening Connection
             conn = DatabaseManager.getInstance().getDbConnection();
-            // Prepearing the query ordered by date and then day part so that it will be AM then PM
-            String query = "select * from time_slot where extract('month' from booking_date) = ? order by booking_date, is_morning";
+            String query = "select ts1.*,sum(booked_places)"
+                    + " from time_slot ts1"
+                    + " left Join service_details "
+                    + " on ts1.booking_date = service_details.booking_date AND ts1.is_morning = service_details.is_morning "
+                    + " where extract('month' from ts1.booking_date) = ? "
+                    + " group by ts1.booking_date, ts1.is_morning "
+                    + " order by ts1.booking_date, is_morning";
             stmt = conn.prepareStatement(query);
             stmt.setObject(1, monthYear.getMonthValue());
             
@@ -116,16 +121,24 @@ public class BookingRepo {
         
             /* fetching dei risultati dalla query nel mio modello */
             set = stmt.executeQuery();
+            TimeSlot slot = new TimeSlot();
             Queue<TimeSlot> querySlots = new LinkedList<TimeSlot>();
             while(set.next()){
                 /* creo lo slot e lo metto nel dizionario */
-                TimeSlot slot = new TimeSlot();
                 slot.setBooking_date(FactoryUtil.dateToLocalDate(set.getDate("booking_date")));
-                slot.setAviable_spots(set.getInt("aviable_spotd"));
-                slot.setIs_morning(set.getBoolean("is_morning"));
-                
+                slot.setAviable_spots(set.getInt("aviable_spots"));
+                slot.setIs_morning(set.getBoolean("is_morning"));            
+                try{
+                    slot.setEmptySpots(slot.getAviable_spots() - set.getInt("sum"));
+                }catch (Exception e){
+                    slot.setEmptySpots(slot.getAviable_spots());
+                }
                 querySlots.add(slot);
             }
+            
+            
+            
+            
             /* il mio range di date è dal primo del mese all'ultimo */
             LocalDate iterDate = monthYear;
             LocalDate endDate = monthYear.withDayOfMonth(monthYear.lengthOfMonth());
@@ -167,6 +180,8 @@ public class BookingRepo {
                 } else {
                     matchingSlot.numPm = dbSlot.getEmptySpots();
                 }
+                int a =1;
+                a=a+2;
             }
             return new CommonResponse(true, "Ok", fullSlots);
         }catch(SQLException e){
@@ -189,13 +204,13 @@ public class BookingRepo {
              // Opening Connection
             conn = DatabaseManager.getInstance().getDbConnection();
             // Prepearing the query ordered by date and then day part so that it will be AM then PM
-            String query = "select time_slot.*,sum(booked_places)"
-                    + " from time_slot"
+            String query = "select ts1.*,sum(booked_places)"
+                    + " from time_slot ts1"
                     + " left Join service_details "
-                    + " on Time_slot.booking_date = service_details.booking_date AND Time_slot.is_morning = service_details.is_morning "
-                    + " where booking_date = ? and  is_morning = ?"
-                    + " group by time_slot.booking_date, Time_slot.is_morning "
-                    + " order by booking_date, is_morning";
+                    + " on ts1.booking_date = service_details.booking_date AND ts1.is_morning = service_details.is_morning "
+                    + " where ts1.booking_date = ? and  is_morning = ?"
+                    + " group by ts1.booking_date, ts1.is_morning "
+                    + " order by ts1.booking_date, is_morning";
             stmt = conn.prepareStatement(query);
             stmt.setObject(1, date);
             stmt.setObject(2, isMorning);

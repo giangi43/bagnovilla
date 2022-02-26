@@ -7,7 +7,6 @@ package it.unica.bagnovilla.Repos;
 
 import it.unica.bagnovilla.Repos.BookingRepo;
 import it.unica.bagnovilla.Models.CommonResponse;
-import it.unica.bagnovilla.Models.Slot;
 import it.unica.bagnovilla.Models.UserModel;
 import it.unica.bagnovilla.model.entity.TimeSlot;
 import java.time.LocalDate;
@@ -41,7 +40,7 @@ public class SlotTest {
         LocalDate August = LocalDate.parse("2021-08-01");
         CommonResponse result = BookingRepo.getInstance().getSlotCalendar(August);
         
-        Assert.assertTrue(result.result && !((ArrayList<Slot>)result.payload).isEmpty(), "eh no");
+        Assert.assertTrue(result.result && !((ArrayList<TimeSlot>)result.payload).isEmpty(), "eh no");
     }
     
 }

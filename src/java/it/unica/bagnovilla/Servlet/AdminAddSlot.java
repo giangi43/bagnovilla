@@ -55,7 +55,7 @@ public class AdminAddSlot extends HttpServlet {
             );
             
             /* Attenzione a chi cerca di generare posti malevolmente */
-            if (reservation.getNumPlaces() < 0) {
+            if (reservation.getAviable_spots()< 0) {
                 throw new Exception("Non è possibile inserire un numero negativo di posti");
             }
             

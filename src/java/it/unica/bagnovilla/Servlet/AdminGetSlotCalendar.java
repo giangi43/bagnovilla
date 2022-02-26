@@ -6,7 +6,6 @@
 package it.unica.bagnovilla.Servlet;
 
 import it.unica.bagnovilla.Models.CommonResponse;
-import it.unica.bagnovilla.Models.Slot;
 import it.unica.bagnovilla.Models.SlotViewModel;
 import it.unica.bagnovilla.Repos.BookingRepo;
 import java.io.IOException;
